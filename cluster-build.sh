@@ -78,12 +78,23 @@ if [ "$1" != "--silent" ]; then
 fi
 printf "* OpenShift Container Storage (OCS) Setting: ${OCS_SETTING}\n\n"
 
+# Request Pull Secret
+if [ "$1" != "--silent" ]; then
+    printf "Specify Pull Secret:\n"
+    read -r PULL_SECRET
+    if [  -z "${PULL_SECRET}" ]; then
+        printf "Please enter a valid Pull Secret\n\n"
+        exit 1
+    fi
+fi
+printf "* Pull Secret Accepted\n\n"
+
 # Run Ansible setup-ocp-vsphere playbook:
-ansible-playbook -e "ocp_version=${DEFAULT_OCPVERSION} disconnected_setting=${DISCONNECTED}" -e @./vars/vars-${BUILD_LAB}.yml setup-ocp-vsphere.yml --vault-password-file=ocp4-vsphere-upi-automation-vault.yml
+ansible-playbook -e "ocp_version=${DEFAULT_OCPVERSION} disconnected_setting=${DISCONNECTED} pull_secret=${PULL_SECRET}" -e @./vars/vars-${BUILD_LAB}.yml setup-ocp-vsphere.yml --vault-password-file=ocp4-vsphere-upi-automation-vault.yml
 
 # Copy Ignition file to the Apache's ignition folder under DocumentRoot:
 cp install-dir/bootstrap.ign /var/www/html/ignition
 chmod 644 /var/www/html/ignition/bootstrap.ign
 
 # Run Ansible setup-vcenter-vms playbook:
-ansible-playbook -e "ocp_version=${DEFAULT_OCPVERSION} worker_memory=${WORKER_MEMORY} worker_cpu=${WORKER_CPU} disconnected_setting=${DISCONNECTED}" -e @./vars/vars-${BUILD_LAB}.yml setup-vcenter-vms.yml --vault-password-file=ocp4-vsphere-upi-automation-vault.yml
+ansible-playbook -e "ocp_version=${DEFAULT_OCPVERSION} worker_memory=${WORKER_MEMORY} worker_cpu=${WORKER_CPU} disconnected_setting=${DISCONNECTED} pull_secret=${PULL_SECRET}" -e @./vars/vars-${BUILD_LAB}.yml setup-vcenter-vms.yml --vault-password-file=ocp4-vsphere-upi-automation-vault.yml
