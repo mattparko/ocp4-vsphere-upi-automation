@@ -79,15 +79,15 @@ fi
 printf "* OpenShift Container Storage (OCS) Setting: ${OCS_SETTING}\n\n"
 
 # Request Pull Secret
-if [ "$1" != "--silent" ]; then
-    printf "Specify Pull Secret:\n"
-    read -r PULL_SECRET
-    if [  -z "${PULL_SECRET}" ]; then
-        printf "Please enter a valid Pull Secret\n\n"
-        exit 1
-    fi
-fi
-printf "* Pull Secret Accepted\n\n"
+#if [ "$1" != "--silent" ]; then
+#    printf "Specify Pull Secret:\n"
+#    read -r PULL_SECRET
+#    if [  -z "${PULL_SECRET}" ]; then
+#        printf "Please enter a valid Pull Secret\n\n"
+#        exit 1
+#    fi
+#fi
+#printf "* Pull Secret Accepted\n\n"
 
 # Run Ansible setup-ocp-vsphere playbook:
 ansible-playbook -e "ocp_version=${DEFAULT_OCPVERSION} disconnected_setting=${DISCONNECTED} pull_secret=${PULL_SECRET}" -e @./vars/vars-${BUILD_LAB}.yml setup-ocp-vsphere.yml --vault-password-file=ocp4-vsphere-upi-automation-vault.yml
